@@ -1,0 +1,14 @@
+version: "3"
+services:
+  web_server:
+    restart: always
+    build:
+       context: ./
+       dockerfile: web.dockerfile
+    container_name: centos-server
+    volumes:
+      - ./:/var/www/html
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - 80:80
