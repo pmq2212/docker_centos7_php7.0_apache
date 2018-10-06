@@ -53,6 +53,6 @@ RUN mkdir -p /var/www/html
 
 EXPOSE 80
 
-RUN systemctl enable httpd.service && systemctl status crond
+RUN systemctl enable httpd.service && systemctl start crond
 
 CMD ["/usr/sbin/init"]
