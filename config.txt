@@ -1,0 +1,47 @@
+
+docker build -f web.dockerfile . --build-arg http_proxy=http://192.168.1.2:3128 --build-arg https_proxy=http://192.168.1.2:3128
+
+winpty docker run -p 80:80 --name centos6_sv -it 0cbf37812bff
+docker stop centos6_sv
+winpty docker exec -it centos6_sv bash
+
+#Proxy
+--------------------------------
+# vi /etc/environment
+http_proxy="http://192.168.1.2:3128"
+https_proxy="https://192.168.1.2:3128"
+ftp_proxy="http://192.168.1.2:3128"
+
+# vi /etc/yum.conf
+proxy=http://192.168.1.2:3128
+
+nano ~/.wgetrc
+use_proxy=on
+http_proxy=192.168.1.2:3128
+https_proxy=192.168.1.2:3128
+--------------------------------------------------------
+yum install wget -y
+
+
+yum install gcc openssl-devel apr-devel apr-util-devel pcre-config pcre-devel autoconf libtool
+cd /usr/src
+wget http://mirror.downloadvn.com/apache//httpd/httpd-2.4.35.tar.gz
+tar xvfz httpd-2.4.35.tar.gz
+
+wget http://mirror.downloadvn.com/apache//apr/apr-1.6.5.tar.gz
+wget http://mirror.downloadvn.com/apache//apr/apr-util-1.6.1.tar.gz
+tar xvfz apr-1.6.5.tar.gz
+tar xvfz apr-util-1.6.1.tar.gz
+
+mv apr-1.6.5/ /usr/src/httpd-2.4.35/srclib/
+mv apr-util-1.6.1/ /usr/src/httpd-2.4.35/srclib/apr-util
+
+cd /usr/src/httpd-2.4.35
+./buildconf
+./configure --enable-ssl --enable-so --with-included-apr --prefix=/usr/local/apache2
+make
+make install
+/usr/local/apache2/bin/apachectl -v
+
+nano /etc/profile.d/httpd.sh
+nano /etc/init.d/httpd
